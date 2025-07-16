@@ -38,7 +38,7 @@ git clone https://github.com/leofukuyama/projeto-detectar-fraude-compras
 Instale as dependências:
 
 ```bash
-pip install pandas streamlit bcrypt
+pip install -r requirements.txt
 ```
 Execute o aplicativo:
 

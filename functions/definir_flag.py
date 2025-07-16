@@ -11,6 +11,6 @@ def inserir_flag(df_sem_tratamento):
     predicao = modelo_indicativo.predict(df_tratado)
 
     copia_df = df_sem_tratamento.copy()
-    copia_df["flag"] = predicao
+    copia_df["flag_fraude_confirmada"] = predicao
     
     return copia_df

@@ -2,11 +2,12 @@ import pandas as pd
 from datetime import datetime
 
 
-def tratar_colunas_df(caminho_arquivo):
-    df = pd.read_csv(caminho_arquivo)
-
-    # Ordenar por data_transacao
-    df = df.sort_values(by=['data_transacao', "id_cliente"])
+def tratar_colunas_df(df):
+    # Converter todas as colunas data em datetime
+    df['data_transacao'] = pd.to_datetime(df['data_transacao'])
+    df['data_nascimento'] = pd.to_datetime(df['data_nascimento'])
+    df['data_cadastro'] = pd.to_datetime(df['data_cadastro'])
+    df['data_emissao_cartao'] = pd.to_datetime(df['data_emissao_cartao'])
 
     # Converter o campo de valor para float
     df['valor'] = df['valor'].astype(float)
@@ -56,7 +57,7 @@ def tratar_colunas_df(caminho_arquivo):
 
     # Criar campos para verificar se é mesma cidade, estado e país
     df["eh_mesma_cidade_transacao"] = df["cidade_residencia"].eq(df["cidade_transacao"]).astype('bool')
-    df["eh_mesmo_estado_transacao"] = df["estado_residencia"].eq(df["UF_transacao"]).astype('bool')
+    df["eh_mesmo_estado_transacao"] = df["estado_residencia"].eq(df["estado_transacao"]).astype('bool')
     df["eh_mesmo_pais_transacao"] = df["pais_residencia"].eq(df["pais_transacao"]).astype('bool')
 
     # Calculando o intervalo de tempo desde a última transação e até a próxima transação e armazenando em colunas para análise
@@ -81,7 +82,7 @@ def tratar_colunas_df(caminho_arquivo):
     df.drop(["data_transacao", "data_nascimento", "data_cadastro", "data_emissao_cartao"], axis=1, inplace=True)
 
     # Dropar colunas de localização
-    colunas_localizacao = ["cidade_transacao", "UF_transacao", "pais_transacao",
+    colunas_localizacao = ["cidade_transacao", "estado_transacao", "pais_transacao",
                         "cidade_residencia", "estado_residencia", "pais_residencia"]
 
     df.drop(colunas_localizacao, axis=1, inplace=True)

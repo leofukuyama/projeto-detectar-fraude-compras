@@ -4,9 +4,9 @@ import streamlit as st
 import mysql.connector
 import os
 from dotenv import load_dotenv
-import joblib
 from mysql.connector import Error
 from passlib.hash import pbkdf2_sha256
+from functions.definir_flag import inserir_flag
 
 # Função para criar o hash da senha (usar quando cadastrar usuário)
 def create_hash(password):
@@ -60,6 +60,18 @@ def login_page():
 def main_page():
     st.title(f"Bem-vindo, {st.session_state.username}!")
     st.write("Você está na área segura do sistema")
+
+    arquivo_csv = st.file_uploader(label="Envie o dataset:")
+
+    if arquivo_csv:
+        df_sem_tratamento = pd.read_csv(arquivo_csv)
+
+        if df_sem_tratamento:
+            df_formatado_como_view_banco = "Chamar função que formata os dados"
+            
+            df_pronto_para_insercao_banco = inserir_flag(df_formatado_como_view_banco)
+
+            # Chamar função para inserir os dados no banco
 
     if st.button("Logout"):
         st.session_state.logged_in = False

@@ -14,9 +14,6 @@ def tratar_colunas_df(caminho_arquivo):
     # Converter o campo de pessoa_fisica para booleano
     df['pessoa_fisica'] = df['pessoa_fisica'].astype(bool)
 
-    # Converter o campo de flag para booleano
-    df['flag'] = df['flag'].astype(bool)
-
     # Criar campo hora, minuto e segundo com base na data_transacao
     df_hora = df['data_transacao'].dt.hour
     df_minuto = df['data_transacao'].dt.minute
@@ -76,6 +73,9 @@ def tratar_colunas_df(caminho_arquivo):
 
     # Dropar a coluna id_cliente para treinar o modelo
     df.drop("id_cliente", axis=1, inplace=True)
+
+    # Dropar a coluna flag para treinar o modelo
+    df.drop("flag", axis=1, inplace=True)
 
     # Dropar as colunas data_transacao, data_nascimento, data_cadastro, data_emissao_cartao para treinar o modelo
     df.drop(["data_transacao", "data_nascimento", "data_cadastro", "data_emissao_cartao"], axis=1, inplace=True)

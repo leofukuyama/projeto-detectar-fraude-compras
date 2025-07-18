@@ -89,9 +89,9 @@ def main_page():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.dataframe(df_tratado.drop("indicativo_flag", axis=1))
+        st.dataframe(df_tratado.drop("indicativo_fraude", axis=1))
     with col2:
-        st.dataframe(df_tratado["indicativo_flag"])
+        st.dataframe(df_tratado["indicativo_fraude"])
 
     # Treinamento
     st.subheader("🏋️ Etapa 3: Treinamento do Modelo")

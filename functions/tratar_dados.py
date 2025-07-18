@@ -100,7 +100,10 @@ def tratar_colunas_df(df):
     df_flag["score_risco_fraude"] = df_flag.sum(axis=1).astype(int)
 
     # Flag final: somente se houver 3 ou mais sinais
-    df["indicativo_flag"] = (df_flag["score_risco_fraude"] >= 3).astype(int)
+    df["indicativo_fraude"] = (df_flag["score_risco_fraude"] >= 3).astype(int)
+
+    # Forçar que toda transação com flag original igual a 1 também tenha indicativo_fraude = 1
+    df.loc[df["flag"] == 1, "indicativo_fraude"] = 1
 
     # Dropar a coluna flag original
     df.drop("flag", axis=1, inplace=True)

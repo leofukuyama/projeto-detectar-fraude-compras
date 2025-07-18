@@ -3,15 +3,19 @@ import pandas as pd
 import streamlit as st
 import mysql.connector
 import os
+from joblib import load
 from dotenv import load_dotenv
 from mysql.connector import Error
 from passlib.hash import pbkdf2_sha256
-from functions.definir_flag import inserir_flag
-from functions.view_python import transformar_colunas_df_raw_para_view
+from functions.carregar_view import carregar_dados
+from functions.tratar_dados import tratar_colunas_df
+from functions.avaliar_modelo import avaliar_modelo
 
-# Função para criar o hash da senha (usar quando cadastrar usuário)
-def create_hash(password):
-    return pbkdf2_sha256.hash(password)
+st.set_page_config(page_title="Detecção de Fraudes",
+                   page_icon="💡",
+                   layout="wide",
+                   initial_sidebar_state="collapsed")
+
 
 # Função para verificar credenciais com hash
 def verify_user(username, password):
@@ -43,8 +47,8 @@ def verify_user(username, password):
 
 # Página de login
 def login_page():
-    st.title("Sistema de Login Seguro")
-    
+    st.title("💳 Login - Sistema de Detecção de Fraudes")
+
     username = st.text_input("Usuário")
     password = st.text_input("Senha", type="password")
     
@@ -59,26 +63,48 @@ def login_page():
 
 # Página principal (após login)
 def main_page():
-    st.title(f"Bem-vindo, {st.session_state.username}!")
-
-    arquivo_csv = st.file_uploader(label="Envie o dataset:")
-
-    if arquivo_csv:
-        df_sem_tratamento = pd.read_csv(arquivo_csv)
-
-        st.write(df_sem_tratamento.head())
-
-        df_formatado_como_view_banco = transformar_colunas_df_raw_para_view(df_sem_tratamento)
-
-        df_pronto_para_insercao_banco = inserir_flag(df_formatado_como_view_banco, df_sem_tratamento)
+    with st.sidebar:        
+        st.markdown(f"👤 Usuário: **{st.session_state.username}**")
+        st.markdown("---")
         
-        st.write(df_pronto_para_insercao_banco.head())
+        if st.button("🚪 Sair"):
+            st.session_state.logged_in = False
+            st.rerun()
 
-        # Chamar função para inserir os dados no banco
+    st.title("🚨 Detecção de Fraudes com Random Forest")
+    st.markdown("Este painel mostra como o modelo foi treinado e aplicado, passo a passo.")
 
-    if st.button("Logout"):
-        st.session_state.logged_in = False
-        st.rerun()
+    st.subheader("🔍 Etapa 1: Carregamento dos Dados")
+    df = carregar_dados()
+    st.dataframe(df.head())
+
+    # Etapa de tratamento
+    st.subheader("🧹 Etapa 2: Tratamento e Preparação de Dados")
+    st.write("Ajustar tipos dos dados, transformar valores categóricos em dummies e criar um novo indicativo de flag.")
+    
+    df_tratado = tratar_colunas_df(df)
+    st.write("Colunas após tratamento:", df_tratado.columns.tolist())
+
+    st.write("Separar entre features e target:")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.dataframe(df_tratado.drop("indicativo_flag", axis=1))
+    with col2:
+        st.dataframe(df_tratado["indicativo_flag"])
+
+    # Treinamento
+    st.subheader("🏋️ Etapa 3: Treinamento do Modelo")
+    st.write("Instanciar RandomForestClassifier e treinar  modelo:")
+    modelo_indicativo = load("machine_learning\modelo_indicativo.joblib")
+    if modelo_indicativo:
+        st.success("Modelo treinado com sucesso!")
+
+    # Avaliação
+    st.subheader("📊 Etapa 4: Avaliação do Modelo")
+    relatorio = avaliar_modelo(modelo_indicativo, df_tratado)
+    
+    st.markdown(f"```\n{relatorio}\n```")
 
 # Configuração inicial
 if 'logged_in' not in st.session_state:

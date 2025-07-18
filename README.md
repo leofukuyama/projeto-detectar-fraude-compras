@@ -48,11 +48,17 @@ streamlit run main.py
 
 📦 Estrutura de Arquivos:
 <pre>
-├── main.py               # Executável 
-├── assets/
-│   └── style.css         # Estilos personalizados
+├── main.py                                     # Executável 
+├── csv_transacoes/                             # CSVs de treino
+│   ├── P17_transacoes_cartoes_abril_2025.csv   
+│   ├── P17_transacoes_cartoes_maio_2025.csv  
+│   └── P17_transacoes_cartoes_junho_2025.csv
+├── functions/                                  # Funções de auxílio
+│   ├── avaliar_modelo.py  
+│   ├── carregar_view.py
+│   └── tratar_dados.py      
 └── machine_learning/
-    └── algoritmo_ml.py   # Estilos personalizados
+    └── algoritmo_ml.py                         # Modelo treinado
              
 </pre>
 
